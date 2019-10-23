@@ -34,6 +34,7 @@ public class Shop {
         return 10;
     }
 
+    //消费者消费队列  完成之后consumerDone为true
     public void consumer(LinkedBlockingQueue queue) {
         Object a = null;
         try {
@@ -49,6 +50,7 @@ public class Shop {
         }
     }
 
+    //生产者增加队列  完成之后producerDone为true
     public void producer(LinkedBlockingQueue queue) {
         Object a = new Random().nextInt();
         try {

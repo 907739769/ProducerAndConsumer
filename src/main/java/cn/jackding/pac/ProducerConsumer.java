@@ -28,45 +28,50 @@ public class ProducerConsumer {
         int consumerNum = 0;
         List<FutureTask> producerList = new ArrayList<>();
         List<FutureTask> consumerList = new ArrayList<>();
-        while (true) {
-            while (producerNum < producerNumMax) {
-                Producer futureTask = new Producer(() -> {
-                    shop.producer(queue);
-                });
-                proExecutor.execute(futureTask);
-                producerList.add(futureTask);
-                producerNum++;
-            }
-            while (consumerNum < consumerNumMax) {
-                Consumer futureTask = new Consumer(() -> {
-                    shop.consumer(queue);
-                });
-                conExecutor.execute(futureTask);
-                consumerList.add(futureTask);
-                consumerNum++;
-            }
-            //判断生产者线程是否完成
-            Iterator<FutureTask> proIterator = producerList.iterator();
-            while (proIterator.hasNext()) {
-                if (proIterator.next().isDone()) {
-                    producerNum--;
-                    proIterator.remove();
+        try {
+            while (true) {
+                while (producerNum < producerNumMax) {
+                    Producer futureTask = new Producer(() -> {
+                        shop.producer(queue);
+                    });
+                    proExecutor.execute(futureTask);
+                    producerList.add(futureTask);
+                    producerNum++;
+                }
+                while (consumerNum < consumerNumMax) {
+                    Consumer futureTask = new Consumer(() -> {
+                        shop.consumer(queue);
+                    });
+                    conExecutor.execute(futureTask);
+                    consumerList.add(futureTask);
+                    consumerNum++;
+                }
+                //判断生产者线程是否完成
+                Iterator<FutureTask> proIterator = producerList.iterator();
+                while (proIterator.hasNext()) {
+                    if (proIterator.next().isDone()) {
+                        producerNum--;
+                        proIterator.remove();
+                    }
+                }
+                //判断消费者线程是否完成
+                Iterator<FutureTask> conIterator = consumerList.iterator();
+                while (conIterator.hasNext()) {
+                    if (conIterator.next().isDone()) {
+                        consumerNum--;
+                        conIterator.remove();
+                    }
+                }
+                //任务完成退出
+                if (shop.producerDone() && shop.consumerDone()) {
+                    break;
                 }
             }
-            //判断消费者线程是否完成
-            Iterator<FutureTask> conIterator = consumerList.iterator();
-            while (conIterator.hasNext()) {
-                if (conIterator.next().isDone()) {
-                    consumerNum--;
-                    conIterator.remove();
-                }
-            }
-            //任务完成退出
-            if (shop.producerDone() && shop.consumerDone()) {
-                conExecutor.shutdown();
-                proExecutor.shutdown();
-                break;
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {//关闭线程池咯
+            conExecutor.shutdown();
+            proExecutor.shutdown();
         }
     }
 
