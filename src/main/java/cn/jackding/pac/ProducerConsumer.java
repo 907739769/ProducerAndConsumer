@@ -29,7 +29,8 @@ public class ProducerConsumer {
         List<FutureTask> producerList = new ArrayList<>();
         List<FutureTask> consumerList = new ArrayList<>();
         try {
-            while (true) {
+            while (!shop.producerDone() || !shop.consumerDone()) {
+                //创建生产者线程
                 while (producerNum < producerNumMax) {
                     Producer futureTask = new Producer(() -> {
                         shop.producer(queue);
@@ -38,6 +39,7 @@ public class ProducerConsumer {
                     producerList.add(futureTask);
                     producerNum++;
                 }
+                //创建消费者线程
                 while (consumerNum < consumerNumMax) {
                     Consumer futureTask = new Consumer(() -> {
                         shop.consumer(queue);
@@ -62,13 +64,7 @@ public class ProducerConsumer {
                         conIterator.remove();
                     }
                 }
-                //任务完成退出
-                if (shop.producerDone() && shop.consumerDone()) {
-                    break;
-                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {//关闭线程池咯
             conExecutor.shutdown();
             proExecutor.shutdown();
