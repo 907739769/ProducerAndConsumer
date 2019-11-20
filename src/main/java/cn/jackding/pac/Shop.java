@@ -12,6 +12,23 @@ import java.util.concurrent.*;
  */
 public class Shop {
 
+    private static Shop shop;
+
+    private Shop(){
+
+    }
+
+    public static Shop getInstance(){
+        if(null==shop) {
+            synchronized (Shop.class) {
+                if(null==shop){
+                    shop= new Shop();
+                }
+            }
+        }
+        return shop;
+    }
+
     private boolean consumerDone;
 
     private boolean producerDone;
@@ -67,11 +84,11 @@ public class Shop {
     }
 
     public ExecutorService getConExecutor() {
-        return new ThreadPoolExecutor(10, 20, 1, TimeUnit.MINUTES, new LinkedBlockingQueue<>(40));
+        return new ThreadPoolExecutor(10, 20, 5, TimeUnit.SECONDS, new LinkedBlockingQueue<>(400));
     }
 
     public ExecutorService getProExecutor() {
-        return new ThreadPoolExecutor(10, 20, 1, TimeUnit.MINUTES, new LinkedBlockingQueue<>(40));
+        return new ThreadPoolExecutor(10, 20, 5, TimeUnit.SECONDS, new LinkedBlockingQueue<>(400));
     }
 
 }

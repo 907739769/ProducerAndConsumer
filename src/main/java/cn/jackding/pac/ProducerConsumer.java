@@ -18,7 +18,7 @@ public class ProducerConsumer {
 
     public void producerConsumer() {
         LinkedBlockingQueue queue = new LinkedBlockingQueue(100);
-        Shop shop = new Shop();
+        Shop shop = Shop.getInstance();
         //消费者 生产者线程池分开  免得消费者或者生产者占用线程池中的全部线程
         ExecutorService conExecutor = shop.getConExecutor();
         ExecutorService proExecutor = shop.getProExecutor();
