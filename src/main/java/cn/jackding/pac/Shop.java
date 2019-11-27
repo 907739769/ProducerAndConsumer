@@ -12,7 +12,7 @@ import java.util.concurrent.*;
  */
 public class Shop {
 
-    private static Shop shop;
+    private volatile static Shop shop;
 
     private Shop(){
 
